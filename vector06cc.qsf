@@ -264,8 +264,96 @@ set_global_assignment -name STRATIX_CONFIGURATION_DEVICE EPCS4
 set_global_assignment -name PARTITION_COLOR 14622752 -section_id Top
 set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
 set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
-set_instance_assignment -name CURRENT_STRENGTH_NEW "MINIMUM CURRENT" -to GPIO_1[*]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to GPIO_1[*]
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "clockster:clockmaker|clk30"
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA OFF
+set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA OFF
+set_global_assignment -name EDA_SIMULATION_TOOL "<None>"
+set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
+set_global_assignment -name EDA_OUTPUT_DATA_FORMAT NONE -section_id eda_simulation
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name USE_SIGNALTAP_FILE reports/stp1.stp
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_location_assignment PIN_B19 -to GPIO_0[13]
+set_location_assignment PIN_A20 -to GPIO_0[14]
+set_location_assignment PIN_J21 -to GPIO_0[26]
+set_location_assignment PIN_G22 -to GPIO_0[25]
+set_location_assignment PIN_G21 -to GPIO_0[24]
+set_location_assignment PIN_F22 -to GPIO_0[23]
+set_location_assignment PIN_F21 -to GPIO_0[22]
+set_location_assignment PIN_E22 -to GPIO_0[21]
+set_location_assignment PIN_E21 -to GPIO_0[20]
+set_location_assignment PIN_D22 -to GPIO_0[19]
+set_location_assignment PIN_D21 -to GPIO_0[18]
+set_location_assignment PIN_C22 -to GPIO_0[17]
+set_location_assignment PIN_C21 -to GPIO_0[16]
+set_location_assignment PIN_B20 -to GPIO_0[15]
+set_location_assignment PIN_B12 -to clk24mhz
+set_location_assignment PIN_W4 -to sdr_addr[0]
+set_location_assignment PIN_W5 -to sdr_addr[1]
+set_location_assignment PIN_Y3 -to sdr_addr[2]
+set_location_assignment PIN_Y4 -to sdr_addr[3]
+set_location_assignment PIN_R6 -to sdr_addr[4]
+set_location_assignment PIN_R5 -to sdr_addr[5]
+set_location_assignment PIN_P6 -to sdr_addr[6]
+set_location_assignment PIN_P5 -to sdr_addr[7]
+set_location_assignment PIN_P3 -to sdr_addr[8]
+set_location_assignment PIN_N4 -to sdr_addr[9]
+set_location_assignment PIN_W3 -to sdr_addr[10]
+set_location_assignment PIN_N6 -to sdr_addr[11]
+set_location_assignment PIN_U3 -to sdr_bank_addr[0]
+set_location_assignment PIN_V4 -to sdr_bank_addr[1]
+set_location_assignment PIN_T3 -to sdr_cas_n
+set_location_assignment PIN_U4 -to sdr_clk
+set_location_assignment PIN_N3 -to sdr_clock_enable
+set_location_assignment PIN_T6 -to sdr_cs_n
+set_location_assignment PIN_U1 -to sdr_data[0]
+set_location_assignment PIN_U2 -to sdr_data[1]
+set_location_assignment PIN_V1 -to sdr_data[2]
+set_location_assignment PIN_V2 -to sdr_data[3]
+set_location_assignment PIN_W1 -to sdr_data[4]
+set_location_assignment PIN_W2 -to sdr_data[5]
+set_location_assignment PIN_Y1 -to sdr_data[6]
+set_location_assignment PIN_Y2 -to sdr_data[7]
+set_location_assignment PIN_N1 -to sdr_data[8]
+set_location_assignment PIN_N2 -to sdr_data[9]
+set_location_assignment PIN_P1 -to sdr_data[10]
+set_location_assignment PIN_P2 -to sdr_data[11]
+set_location_assignment PIN_R1 -to sdr_data[12]
+set_location_assignment PIN_R2 -to sdr_data[13]
+set_location_assignment PIN_T1 -to sdr_data[14]
+set_location_assignment PIN_T2 -to sdr_data[15]
+set_location_assignment PIN_R7 -to sdr_data_mask[0]
+set_location_assignment PIN_M5 -to sdr_data_mask[1]
+set_location_assignment PIN_T5 -to sdr_ras_n
+set_location_assignment PIN_R8 -to sdr_we_n
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to clk100
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to clk25
+set_global_assignment -name SLD_FILE "Z:/workspace/vector06cc/reports/stp1_auto_stripped.stp"
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "IO PATHS AND MINIMUM TPD PATHS"
+set_global_assignment -name OPTIMIZE_MULTI_CORNER_TIMING ON
+set_global_assignment -name FITTER_EFFORT "STANDARD FIT"
+set_global_assignment -name AUTO_GLOBAL_MEMORY_CONTROLS ON
+set_global_assignment -name AUTO_DELAY_CHAINS_FOR_HIGH_FANOUT_INPUT_PINS ON
+set_global_assignment -name VERILOG_FILE "../verilog-osx/fifo_256x12.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/vga_bitstream.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/vga.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/fifo_1024x16.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/fifo_512x12_ram.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/fifo_512x12_lc.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/vga_writer.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/vga_sync.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/vga_reader.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/sdram_cntr.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/coordinator.v"
+set_global_assignment -name VERILOG_FILE "../verilog-osx/converter.v"
 set_global_assignment -name VECTOR_WAVEFORM_FILE clk50mhz.vwf
 set_global_assignment -name VERILOG_FILE src/vector06cc.v
 set_global_assignment -name VERILOG_FILE src/floppy/floppy.v
@@ -321,23 +409,8 @@ set_global_assignment -name VERILOG_FILE src/osd/textmode.v
 set_global_assignment -name VERILOG_FILE src/osd/chargen.v
 set_global_assignment -name VERILOG_FILE src/osd/screenbuffer.v
 set_global_assignment -name VERILOG_FILE src/altmodules/ayclkdrv.v
-set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "clockster:clockmaker|clk30"
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
-set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
-set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
-set_global_assignment -name SDC_FILE notsure.sdc
-set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA OFF
-set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA OFF
-set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
-set_global_assignment -name EDA_TIME_SCALE "1 ps" -section_id eda_simulation
-set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
-set_global_assignment -name ENABLE_SIGNALTAP OFF
-set_global_assignment -name USE_SIGNALTAP_FILE vector06cc.stp
-set_global_assignment -name SIGNALTAP_FILE vector06cc.stp
-set_global_assignment -name SLD_FILE "D:/users/svo/src/vector06cc/trunk/vector06cc_auto_stripped.stp"
+set_global_assignment -name QIP_FILE pll_conv.qip
+set_global_assignment -name CDF_FILE reports/vector06cc.cdf
+set_global_assignment -name QIP_FILE src/altmodules/mclk24mhz2.qip
+set_global_assignment -name QIP_FILE src/altmodules/mclk50mhz.qip
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

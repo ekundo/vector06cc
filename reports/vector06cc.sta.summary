@@ -1,0 +1,469 @@
+------------------------------------------------------------
+TimeQuest Timing Analyzer Summary
+------------------------------------------------------------
+
+Type  : Slow Model Setup 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : -8.790
+TNS   : -1091.128
+
+Type  : Slow Model Setup 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : -7.044
+TNS   : -150.139
+
+Type  : Slow Model Setup 'clockster:clockmaker|div300by21[4]'
+Slack : -6.490
+TNS   : -1103.906
+
+Type  : Slow Model Setup 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -3.764
+TNS   : -97.885
+
+Type  : Slow Model Setup 'clockster:clockmaker|cophacc[15]'
+Slack : -2.368
+TNS   : -64.441
+
+Type  : Slow Model Setup 'T8080se:CPU|WR_n'
+Slack : -2.219
+TNS   : -15.544
+
+Type  : Slow Model Setup 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : -1.282
+TNS   : -11.042
+
+Type  : Slow Model Setup 'TCK'
+Slack : -1.147
+TNS   : -2.512
+
+Type  : Slow Model Setup 'jtag_top:tigertiger|USB_JTAG:u1|mTCK'
+Slack : -1.104
+TNS   : -10.046
+
+Type  : Slow Model Setup 'soundcodec:soundnik|audio_io:audioio|LRCK_1X'
+Slack : -1.072
+TNS   : -8.286
+
+Type  : Slow Model Setup 'clockmaker|vector_xtal|altpll_component|pll|clk[1]'
+Slack : -1.041
+TNS   : -10.986
+
+Type  : Slow Model Setup 'ayglue:shrieker|YM2149:digeridoo|env_reset'
+Slack : -0.815
+TNS   : -1.450
+
+Type  : Slow Model Setup 'clockster:clockmaker|pal_phase[31]'
+Slack : -0.299
+TNS   : -0.515
+
+Type  : Slow Model Setup 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 33.538
+TNS   : 0.000
+
+Type  : Slow Model Hold 'TCK'
+Slack : -3.244
+TNS   : -11.864
+
+Type  : Slow Model Hold 'clockster:clockmaker|cophacc[15]'
+Slack : -2.759
+TNS   : -6.806
+
+Type  : Slow Model Hold 'T8080se:CPU|WR_n'
+Slack : -2.281
+TNS   : -8.408
+
+Type  : Slow Model Hold 'clockster:clockmaker|div300by21[4]'
+Slack : -0.239
+TNS   : -0.413
+
+Type  : Slow Model Hold 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -0.059
+TNS   : -0.649
+
+Type  : Slow Model Hold 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 0.080
+TNS   : 0.000
+
+Type  : Slow Model Hold 'clockmaker|vector_xtal|altpll_component|pll|clk[1]'
+Slack : 0.081
+TNS   : 0.000
+
+Type  : Slow Model Hold 'soundcodec:soundnik|audio_io:audioio|LRCK_1X'
+Slack : 0.283
+TNS   : 0.000
+
+Type  : Slow Model Hold 'clockster:clockmaker|pal_phase[31]'
+Slack : 0.445
+TNS   : 0.000
+
+Type  : Slow Model Hold 'jtag_top:tigertiger|USB_JTAG:u1|mTCK'
+Slack : 0.445
+TNS   : 0.000
+
+Type  : Slow Model Hold 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : 0.445
+TNS   : 0.000
+
+Type  : Slow Model Hold 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 0.445
+TNS   : 0.000
+
+Type  : Slow Model Hold 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : 0.445
+TNS   : 0.000
+
+Type  : Slow Model Hold 'ayglue:shrieker|YM2149:digeridoo|env_reset'
+Slack : 0.624
+TNS   : 0.000
+
+Type  : Slow Model Recovery 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : -4.475
+TNS   : -303.382
+
+Type  : Slow Model Recovery 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : -4.472
+TNS   : -913.241
+
+Type  : Slow Model Recovery 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : -1.877
+TNS   : -7.508
+
+Type  : Slow Model Recovery 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -1.505
+TNS   : -30.100
+
+Type  : Slow Model Recovery 'clockster:clockmaker|cophacc[15]'
+Slack : -1.226
+TNS   : -17.104
+
+Type  : Slow Model Recovery 'clockster:clockmaker|div300by21[4]'
+Slack : -0.940
+TNS   : -4.684
+
+Type  : Slow Model Recovery 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 34.639
+TNS   : 0.000
+
+Type  : Slow Model Removal 'clockster:clockmaker|cophacc[15]'
+Slack : 0.798
+TNS   : 0.000
+
+Type  : Slow Model Removal 'clockster:clockmaker|div300by21[4]'
+Slack : 0.813
+TNS   : 0.000
+
+Type  : Slow Model Removal 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : 1.092
+TNS   : 0.000
+
+Type  : Slow Model Removal 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : 1.464
+TNS   : 0.000
+
+Type  : Slow Model Removal 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 2.844
+TNS   : 0.000
+
+Type  : Slow Model Removal 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : 3.606
+TNS   : 0.000
+
+Type  : Slow Model Removal 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 3.606
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'TCK'
+Slack : -1.469
+TNS   : -7.579
+
+Type  : Slow Model Minimum Pulse Width 'clockster:clockmaker|div300by21[4]'
+Slack : -0.611
+TNS   : -292.058
+
+Type  : Slow Model Minimum Pulse Width 'clockster:clockmaker|cophacc[15]'
+Slack : -0.611
+TNS   : -54.990
+
+Type  : Slow Model Minimum Pulse Width 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -0.611
+TNS   : -51.324
+
+Type  : Slow Model Minimum Pulse Width 'jtag_top:tigertiger|USB_JTAG:u1|mTCK'
+Slack : -0.611
+TNS   : -23.218
+
+Type  : Slow Model Minimum Pulse Width 'soundcodec:soundnik|audio_io:audioio|LRCK_1X'
+Slack : -0.611
+TNS   : -21.996
+
+Type  : Slow Model Minimum Pulse Width 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : -0.611
+TNS   : -14.664
+
+Type  : Slow Model Minimum Pulse Width 'clockster:clockmaker|pal_phase[31]'
+Slack : -0.611
+TNS   : -7.332
+
+Type  : Slow Model Minimum Pulse Width 'T8080se:CPU|WR_n'
+Slack : 0.500
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'ayglue:shrieker|YM2149:digeridoo|env_reset'
+Slack : 0.500
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'clockmaker|vector_xtal|altpll_component|pll|clk[1]'
+Slack : 0.555
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : 2.436
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'clk50mhz'
+Slack : 10.000
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 17.436
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 18.269
+TNS   : 0.000
+
+Type  : Slow Model Minimum Pulse Width 'clk24mhz'
+Slack : 20.833
+TNS   : 0.000
+
+Type  : Fast Model Setup 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : -4.095
+TNS   : -532.326
+
+Type  : Fast Model Setup 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : -2.657
+TNS   : -57.136
+
+Type  : Fast Model Setup 'clockster:clockmaker|div300by21[4]'
+Slack : -1.877
+TNS   : -283.907
+
+Type  : Fast Model Setup 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -0.757
+TNS   : -15.568
+
+Type  : Fast Model Setup 'clockmaker|vector_xtal|altpll_component|pll|clk[1]'
+Slack : -0.698
+TNS   : -3.756
+
+Type  : Fast Model Setup 'clockster:clockmaker|cophacc[15]'
+Slack : -0.369
+TNS   : -7.045
+
+Type  : Fast Model Setup 'soundcodec:soundnik|audio_io:audioio|LRCK_1X'
+Slack : -0.214
+TNS   : -1.119
+
+Type  : Fast Model Setup 'T8080se:CPU|WR_n'
+Slack : -0.213
+TNS   : -0.989
+
+Type  : Fast Model Setup 'ayglue:shrieker|YM2149:digeridoo|env_reset'
+Slack : -0.061
+TNS   : -0.061
+
+Type  : Fast Model Setup 'jtag_top:tigertiger|USB_JTAG:u1|mTCK'
+Slack : 0.064
+TNS   : 0.000
+
+Type  : Fast Model Setup 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : 0.126
+TNS   : 0.000
+
+Type  : Fast Model Setup 'TCK'
+Slack : 0.186
+TNS   : 0.000
+
+Type  : Fast Model Setup 'clockster:clockmaker|pal_phase[31]'
+Slack : 0.491
+TNS   : 0.000
+
+Type  : Fast Model Setup 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 37.515
+TNS   : 0.000
+
+Type  : Fast Model Hold 'TCK'
+Slack : -2.391
+TNS   : -9.166
+
+Type  : Fast Model Hold 'clockster:clockmaker|cophacc[15]'
+Slack : -1.714
+TNS   : -8.194
+
+Type  : Fast Model Hold 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -0.876
+TNS   : -18.887
+
+Type  : Fast Model Hold 'clockster:clockmaker|div300by21[4]'
+Slack : -0.799
+TNS   : -67.552
+
+Type  : Fast Model Hold 'T8080se:CPU|WR_n'
+Slack : -0.726
+TNS   : -2.325
+
+Type  : Fast Model Hold 'soundcodec:soundnik|audio_io:audioio|LRCK_1X'
+Slack : 0.095
+TNS   : 0.000
+
+Type  : Fast Model Hold 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Hold 'clockmaker|vector_xtal|altpll_component|pll|clk[1]'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Hold 'clockster:clockmaker|pal_phase[31]'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Hold 'jtag_top:tigertiger|USB_JTAG:u1|mTCK'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Hold 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Hold 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Hold 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : 0.215
+TNS   : 0.000
+
+Type  : Fast Model Hold 'ayglue:shrieker|YM2149:digeridoo|env_reset'
+Slack : 0.632
+TNS   : 0.000
+
+Type  : Fast Model Recovery 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : -2.476
+TNS   : -496.559
+
+Type  : Fast Model Recovery 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : -2.476
+TNS   : -165.178
+
+Type  : Fast Model Recovery 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : -0.467
+TNS   : -1.868
+
+Type  : Fast Model Recovery 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -0.301
+TNS   : -6.020
+
+Type  : Fast Model Recovery 'clockster:clockmaker|cophacc[15]'
+Slack : -0.151
+TNS   : -2.058
+
+Type  : Fast Model Recovery 'clockster:clockmaker|div300by21[4]'
+Slack : -0.122
+TNS   : -0.242
+
+Type  : Fast Model Recovery 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 38.757
+TNS   : 0.000
+
+Type  : Fast Model Removal 'clockster:clockmaker|cophacc[15]'
+Slack : -0.024
+TNS   : -0.196
+
+Type  : Fast Model Removal 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : 0.140
+TNS   : 0.000
+
+Type  : Fast Model Removal 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : 0.306
+TNS   : 0.000
+
+Type  : Fast Model Removal 'clockster:clockmaker|div300by21[4]'
+Slack : 0.331
+TNS   : 0.000
+
+Type  : Fast Model Removal 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 1.262
+TNS   : 0.000
+
+Type  : Fast Model Removal 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : 2.018
+TNS   : 0.000
+
+Type  : Fast Model Removal 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 2.018
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'TCK'
+Slack : -1.222
+TNS   : -6.222
+
+Type  : Fast Model Minimum Pulse Width 'clockster:clockmaker|div300by21[4]'
+Slack : -0.500
+TNS   : -239.000
+
+Type  : Fast Model Minimum Pulse Width 'clockster:clockmaker|cophacc[15]'
+Slack : -0.500
+TNS   : -45.000
+
+Type  : Fast Model Minimum Pulse Width 'I2C_AV_Config:u7|mI2C_CTRL_CLK'
+Slack : -0.500
+TNS   : -42.000
+
+Type  : Fast Model Minimum Pulse Width 'jtag_top:tigertiger|USB_JTAG:u1|mTCK'
+Slack : -0.500
+TNS   : -19.000
+
+Type  : Fast Model Minimum Pulse Width 'soundcodec:soundnik|audio_io:audioio|LRCK_1X'
+Slack : -0.500
+TNS   : -18.000
+
+Type  : Fast Model Minimum Pulse Width 'soundcodec:soundnik|audio_io:audioio|oAUD_BCK'
+Slack : -0.500
+TNS   : -12.000
+
+Type  : Fast Model Minimum Pulse Width 'clockster:clockmaker|pal_phase[31]'
+Slack : -0.500
+TNS   : -6.000
+
+Type  : Fast Model Minimum Pulse Width 'T8080se:CPU|WR_n'
+Slack : 0.500
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'ayglue:shrieker|YM2149:digeridoo|env_reset'
+Slack : 0.500
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'clockmaker|vector_xtal|altpll_component|pll|clk[1]'
+Slack : 0.666
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'pll_for_sdram_0|altpll_component|pll|clk[1]'
+Slack : 2.873
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'clk50mhz'
+Slack : 10.000
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'pll_for_sdram_0|altpll_component|pll|clk[2]'
+Slack : 17.873
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'clockmaker|vector_xtal|altpll_component|pll|clk[0]'
+Slack : 18.706
+TNS   : 0.000
+
+Type  : Fast Model Minimum Pulse Width 'clk24mhz'
+Slack : 20.833
+TNS   : 0.000
+
+------------------------------------------------------------

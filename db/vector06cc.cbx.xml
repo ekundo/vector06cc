@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<LOG_ROOT>
+	<PROJECT NAME="vector06cc">
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|converter:converter_inst|vga_writer:vga_writer_inst|fifo_256x12:fifo|dcfifo:dcfifo_component" CBX_FILE_NAME="dcfifo_02i1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|rambuffer:line2|rdwrctr:c2|lpm_counter:ctr" CBX_FILE_NAME="cntr_joi.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum2|lpm_mult:Mult1|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_ofh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum3|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum4|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|palette_ram:paletteram|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_gaa1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum4|lpm_mult:Mult1|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum5|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_ofh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|floppy:flappy|ram512x8a:zeropa|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_ikb1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|rambuffer:line1|altsyncram:pixelram_rtl_0" CBX_FILE_NAME="altsyncram_utg1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum5|lpm_mult:Mult1|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum6|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_geh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|converter:converter_inst|vga_reader:vga_reader_inst|fifo_256x12:fifo|dcfifo:dcfifo_component" CBX_FILE_NAME="dcfifo_02i1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|textmode:osd|chargen:chrom0|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_dd81.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|rambuffer:line2|altsyncram:pixelram_rtl_0" CBX_FILE_NAME="altsyncram_utg1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum6|lpm_mult:Mult1|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_ofh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum7|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|lpm_rom0:bootrom|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_tb81.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|textmode:osd|screenbuffer:ram0|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_0b92.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum0|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|floppy:flappy|floppyram:flopramnik|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_nge1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|rambuffer:line1|rdwrctr:c1|lpm_counter:ctr" CBX_FILE_NAME="cntr_joi.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum0|lpm_mult:Mult1|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum1|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_ofh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|floppy:flappy|ram1024x8a:bufpa|altsyncram:altsyncram_component" CBX_FILE_NAME="altsyncram_9nb1.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|rambuffer:line1|rdwrctr:c2|lpm_counter:ctr" CBX_FILE_NAME="cntr_joi.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|rambuffer:line2|rdwrctr:c1|lpm_counter:ctr" CBX_FILE_NAME="cntr_joi.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum1|lpm_mult:Mult1|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_pfh.tdf"/>
+		<CBX_INST_ENTRY INSTANCE_NAME="|vector06cc|video:vidi|uvsum:uvsum2|lpm_mult:Mult0|multcore:mult_core|mpar_add:padder|lpm_add_sub:adder[0]" CBX_FILE_NAME="add_sub_geh.tdf"/>
+	</PROJECT>
+</LOG_ROOT>

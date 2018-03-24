@@ -19,9 +19,9 @@
 
 `default_nettype none
 
-module clockster(clk, clk50, clk24, clk18, clk14, ce12, ce6, ce6x, ce3, video_slice, pipe_ab, ce1m5, clkpalFSC);
+module clockster(clk, clk24in, clk24, clk18, clk14, ce12, ce6, ce6x, ce3, video_slice, pipe_ab, ce1m5, clkpalFSC);
 input  [1:0] 	clk;
-input			clk50;
+input			clk24in;
 output clk24;
 output clk18;
 output clk14;
@@ -51,7 +51,9 @@ wire clk70k9;
 wire clk30;
 wire clk28;
 
-mclk24mhz vector_xtal(clk50, clk24, clk300, clk28, lock);
+mclk24mhz2 vector_xtal(clk24in, clk24, clk300, lock);
+
+// mclk24mhz vector_xtal(clk50, clk24, clk300, clk28, lock);
 
 // Derive clock for PAL subcarrier: 4x 4.43361875
 `define PHACC_WIDTH 32

@@ -54,11 +54,12 @@
 `define WITH_AY
 `define WITH_FLOPPY
 `define WITH_OSD
-//`define WITH_DE1_JTAG
-//`define JTAG_AUTOHOLD
+`define WITH_DE1_JTAG
+`define JTAG_AUTOHOLD
+`define ONE_50MHZ_PLL_FOR_ALL
 `define FLOPPYLESS_HAX	// set FDC odata to $00 when compiling without floppy
 
-module vector06cc(CLOCK_27, clk50mhz, KEY[3:0], LEDr[9:0], LEDg[7:0], SW[9:0], HEX0, HEX1, HEX2, HEX3, 
+module vector06cc(clk24mhz, CLOCK_27, clk50mhz, KEY[3:0], LEDr[9:0], LEDg[7:0], SW[9:0], HEX0, HEX1, HEX2, HEX3, 
 		////////////////////	SRAM Interface		////////////////
 		SRAM_DQ,						//	SRAM Data bus 16 Bits
 		SRAM_ADDR,						//	SRAM Address bus 18 Bits
@@ -107,7 +108,20 @@ module vector06cc(CLOCK_27, clk50mhz, KEY[3:0], LEDr[9:0], LEDg[7:0], SW[9:0], H
 		// TEST PIN
 		GPIO_0,
 		GPIO_1,
+
+		sdr_addr,
+		sdr_bank_addr,
+		sdr_data,
+		sdr_clock_enable,
+		sdr_cs_n,
+		sdr_ras_n,
+		sdr_cas_n,
+		sdr_we_n,
+		sdr_data_mask,
+		sdr_clk
+		
 );
+input			clk24mhz;
 input [1:0]		CLOCK_27;
 input			clk50mhz;
 input [3:0] 	KEY;
@@ -167,8 +181,20 @@ output			SD_CLK;					//	SD Card Clock			(SCK)
 output			UART_TXD;
 input			UART_RXD;
 
-output [12:0] 	GPIO_0;
+output [26:0] 	GPIO_0;
 output [35:0]	GPIO_1;
+
+output	[11:0]	sdr_addr;
+output	[1:0]	sdr_bank_addr;
+inout	[15:0]	sdr_data;
+output			sdr_clock_enable;
+output			sdr_cs_n;
+output			sdr_ras_n;
+output			sdr_cas_n;
+output			sdr_we_n;
+output	[1:0]	sdr_data_mask;
+output			sdr_clk;
+
 
 
 // CLOCK SETUP
@@ -179,7 +205,7 @@ wire ce12, ce6, ce6x, ce3, vi53_timer_ce, video_slice, pipe_ab;
 
 clockster clockmaker(
 	.clk(CLOCK_27), 
-	.clk50(clk50mhz),
+	.clk24in(clk24mhz),
 	.clk24(clk24), 
 	.clk18(clk18), 
 	.clk14(clk14),
@@ -515,11 +541,9 @@ reg [3:0] video_b;
 
 assign GPIO_1[29:26] = tv_luma[3:0];
 
-assign VGA_R = tv_mode[0] ? tv_luma[3:0] : video_r;
-assign VGA_G = tv_mode[0] ? tv_luma[3:0] : video_g;
-assign VGA_B = tv_mode[0] ? tv_luma[3:0] : video_b;
-assign VGA_VS= vga_vs;
-assign VGA_HS= vga_hs;
+
+// assign GPIO_0[26:13] = {VGA_HS, VGA_VS, VGA_R, VGA_G, VGA_B};
+// assign GPIO_0[26:13] = {vga_hs, vga_vs, video_r, video_g, video_b};
 
 wire [1:0] 	lowcolor_b = {2{osd_active}} & {realcolor[7],1'b0};
 wire 		lowcolor_g = osd_active & realcolor[5];
@@ -532,6 +556,156 @@ always @(posedge clk24) begin
 	video_g <= {overlayed_colour[5:3], lowcolor_g};
 	video_b <= {overlayed_colour[7:6], lowcolor_b};
 end
+
+
+wire	clk100;
+wire	clk25;
+
+mclk50mhz pll_for_sdram_0
+(
+	.inclk0			(	clk50mhz	),
+	.c0             (	sdr_clk		),
+	.c1             (	clk100		),
+	.c2             (	clk25		)
+);
+
+
+parameter 					i_h_disp			=	12'd640;
+parameter 					i_h_bporch			=	12'd62;
+
+parameter 					i_v_disp			=	12'd576;
+parameter 					i_v_bporch			=	12'd22;
+	
+parameter 					i_hs_polarity		=	1'b0;
+parameter 					i_vs_polarity		=	1'b0;
+parameter 					i_frame_interlaced	=	1'b0;
+
+
+parameter 					o_h_disp			=	12'd640;
+parameter 					o_h_fporch			=	12'd16;
+parameter 					o_h_sync			=	12'd96;
+parameter 					o_h_bporch			=	12'd48;
+
+parameter 					o_v_disp			=	12'd350;
+parameter 					o_v_fporch			=	12'd37;
+parameter 					o_v_sync			=	12'd2;
+parameter 					o_v_bporch			=	12'd60;
+	
+parameter 					o_hs_polarity		=	1'b1;
+parameter 					o_vs_polarity		=	1'b0;
+parameter 					o_frame_interlaced	=	1'b0;
+
+
+
+wire						i_hsync;
+wire						i_vsync;
+
+wire	[3:0]				i_vga_r;
+wire	[3:0]				i_vga_g;
+wire	[3:0]				i_vga_b;
+
+// vga vga_inst (
+
+// 	.clk				(	clk25					),
+// 	.reset				(	mreset_n				),
+
+// 	.hsync				(	i_hsync					),
+// 	.vsync				(	i_vsync					),
+
+// 	.vga_r				(	i_vga_r					),
+// 	.vga_g				(	i_vga_g					),
+// 	.vga_b				(	i_vga_b					)
+
+// );
+
+assign i_hsync = vga_hs;
+assign i_vsync = vga_vs;
+assign i_vga_r = video_r;
+assign i_vga_g = video_g;
+assign i_vga_b = video_b;
+
+
+wire			o_hsync;
+wire			o_vsync;
+
+wire	[3:0]	o_vga_r;
+wire	[3:0]	o_vga_g;
+wire	[3:0]	o_vga_b;
+
+converter #(
+
+	.i_h_disp				(	i_h_disp				),
+	.i_h_bporch				(	i_h_bporch				),
+
+	.i_v_disp				(	i_v_disp				),
+	.i_v_bporch				(	i_v_bporch				),
+				
+	.i_hs_polarity			(	i_hs_polarity			),
+	.i_vs_polarity			(	i_vs_polarity			),
+
+
+	.o_h_disp				(	o_h_disp				),
+	.o_h_fporch				(	o_h_fporch				),
+	.o_h_sync				(	o_h_sync				),
+	.o_h_bporch				(	o_h_bporch				),
+
+	.o_v_disp				(	o_v_disp				),
+	.o_v_fporch				(	o_v_fporch				),
+	.o_v_sync				(	o_v_sync				),
+	.o_v_bporch				(	o_v_bporch				),
+	
+	.o_hs_polarity			(	o_hs_polarity			),
+	.o_vs_polarity			(	o_vs_polarity			),
+	.o_frame_interlaced		(	o_frame_interlaced		)
+	
+) converter_inst (
+	
+	.clk_in					(	clk24					),
+	.clk_out				(	clk25					),
+	.clk100					(	clk100					),
+	.reset					(	mreset_n				),
+
+	.i_hsync				(	i_hsync					),
+	.i_vsync				(	i_vsync					),
+
+	.i_vga_r				(	i_vga_r					),
+	.i_vga_g				(	i_vga_g					),
+	.i_vga_b				(	i_vga_b					),
+
+	// .i_hsync				(	vga_hs					),
+	// .i_vsync				(	vga_vs					),
+
+	// .i_vga_r				(	video_r					),
+	// .i_vga_g				(	video_g					),
+	// .i_vga_b				(	video_b					),
+
+	.sdr_addr				(	sdr_addr				),
+	.sdr_bank_addr			(	sdr_bank_addr			),
+	.sdr_data				(	sdr_data				),
+	.sdr_clock_enable		(	sdr_clock_enable		),
+	.sdr_cs_n				(	sdr_cs_n				),
+	.sdr_ras_n				(	sdr_ras_n				),
+	.sdr_cas_n				(	sdr_cas_n				),
+	.sdr_we_n				(	sdr_we_n				),
+	.sdr_data_mask			(	sdr_data_mask			),
+
+	.o_hsync				(	o_hsync					),
+	.o_vsync				(	o_vsync					),
+
+	.o_vga_r				(	o_vga_r					),
+	.o_vga_g				(	o_vga_g					),
+	.o_vga_b				(	o_vga_b					)
+
+);
+
+
+assign VGA_R = tv_mode[0] ? video_r : o_vga_r;
+assign VGA_G = tv_mode[0] ? video_g : o_vga_g;
+assign VGA_B = tv_mode[0] ? video_b : o_vga_b;
+assign VGA_VS= tv_mode[0] ? vga_vs : o_vsync;
+assign VGA_HS= tv_mode[0] ? vga_hs : o_hsync;
+
+
 
 
 ///////////
@@ -1032,6 +1206,7 @@ always @(posedge clk24) if (ce) begin: _fake_pu
 	end
 end
 */
+
 endmodule
 
 

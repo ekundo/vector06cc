@@ -38,7 +38,7 @@ module wd1793(clk, clken, reset_n,
 				rd, wr, addr, idata, odata, 
 
 				// memory buffer interface
-				buff_addr, 
+				buff_addr,	
 				buff_rd, 
 				buff_wr, 
 				buff_idata, 
