@@ -16,30 +16,14 @@
 // Top-level design file of Vector-06C replica.
 //
 // Switches, as they are configured now:
-//	SW1:SW0			red LED[7:0] display selector: 
-// 						00: Data In
-//						01: Data Out
-//						11: registered Data Out
 //
-// 	SW3:SW2			green LED group display selector
-//						00:	registered CPU status word
-//						01: keyboard status/testpins
-//						10: RAM disk test pins
-//						11: WR_n, io_stack, SRAM_ADDR[17:15] (RAM disk page)
-//
-//	SW4			1 = PAL field phase alternate (should be on for normal tv's)
-//	SW5			1 = CVBS composite output on VGA R,G,B pins	
-//					(connect them together and feed to tv)
-//
-//	SW6			disable tape in
-//
-//	SW7			manual bus hold, recommended for SRAM <-> JTAG exchange operations
+//	SW7			video mode
 //
 //				These must be both "1" for normal operation:
-//	SW9:SW8				00: single-clock, tap clock by KEY[1]
+//	SW9:SW8			00: normal Vector-06C speed, full compatibility mode
 //					01: warp mode: 6 MHz, no waitstates
 //					10: slow clock, code is executed at eyeballable speed
-//					11: normal Vector-06C speed, full compatibility mode
+//					11: single-clock, tap clock by KEY[1]
 //			
 //
 // --------------------------------------------------------------------
@@ -163,8 +147,8 @@ output			AUD_ADCLRCK;			//	Audio CODEC ADC LR Clock
 input			AUD_ADCDAT;				//	Audio CODEC ADC Data
 
 
-input			PS2_CLK;
-input			PS2_DAT;
+inout			PS2_CLK;
+inout			PS2_DAT;
 
 ////////////////////	USB JTAG link	////////////////////////////
 input  			TDI;					// CPLD -> FPGA (data in)
@@ -246,10 +230,10 @@ reg warpclock_enabled;
 
 always @(posedge clk24) 
 	case ({SW[9],SW[8]}) 
-			// both down = tap on key 1
-	2'b00: 	{singleclock_enabled, slowclock_enabled, warpclock_enabled} = 3'b100;
-			// both up = regular
-	2'b11:	{singleclock_enabled, slowclock_enabled, warpclock_enabled} = 3'b000;
+			// both down = regular
+	2'b00: 	{singleclock_enabled, slowclock_enabled, warpclock_enabled} = 3'b000;	
+			// both up = tap on key 1
+	2'b11:	{singleclock_enabled, slowclock_enabled, warpclock_enabled} = 3'b100;
 			// down/up == warp
 	2'b01: 	{singleclock_enabled, slowclock_enabled, warpclock_enabled} = 3'b001;
 			// up/down = slow
@@ -326,13 +310,14 @@ end
 // DEBUG PINS  //
 /////////////////
 assign GPIO_0[8:0] = {clk24, ce12, ce6, ce3, vi53_timer_ce, video_slice, clkpal4FSC, 1'b1, tv_test[0]};
+assign GPIO_0[14:13] = {PS2_CLK, PS2_DAT};
 
 /////////////////
 // CPU SECTION //
 /////////////////
 wire RESET_n = mreset_n & !blksbr_reset_pulse;
 reg READY;
-wire HOLD = jHOLD | SW[7] | osd_command_bushold | floppy_death_by_floppy;
+wire HOLD = jHOLD | osd_command_bushold | floppy_death_by_floppy;
 wire INT = int_request;
 wire INTE;
 wire DBIN;
@@ -349,21 +334,11 @@ wire [7:0] DO;
 
 reg[7:0] status_word;
 
-reg[9:0] gledreg;
+reg[9:0] rledreg;
 
-assign LEDr[7:0] = SW[0] == 0 ? DI : SW[1] == 0 ? DO : gledreg[7:0];
-assign LEDr[9:8] = gledreg[9:8];
-//assign LEDg = SW[2] ? status_word : {vv55int_pb_out[3:0],video_palette_value[3:0]};
-wire [1:0] sw23 = {SW[3],SW[2]};
-
-wire [7:0] kbd_keystatus = {kbd_mod_rus, kbd_key_shift, kbd_key_ctrl, kbd_key_rus, kbd_key_blksbr};
-
-assign LEDg = sw23 == 0 ? status_word 
-			: sw23 == 1 ? floppy_leds//{floppy_rden,floppy_odata[6:0]}//{kbd_keystatus} 
-			: sw23 == 2 ? floppy_status 
-			: {vi53_timer_ce, INT, interrupt_ack, mJTAG_SELECT, mJTAG_SRAM_WR_N, SRAM_ADDR[17:15]};
+assign LEDr[9:0] = rledreg[9:0];
 			
-SEG7_LUT_4 seg7display(HEX0, HEX1, HEX2, HEX3, /*SW[4] ? clock_counter :*/ A);
+SEG7_LUT_4 seg7display(HEX0, HEX1, HEX2, HEX3, A);
 
 
 wire ram_read;
@@ -398,7 +373,6 @@ wire WRN_CPUCE = WR_n | ~cpu_ce;
 
 always @(posedge clk24) begin
 	if (cpu_ce) begin
-		if (WR_n == 0) gledreg[7:0] <= DO;
 		if (SYNC) begin
 			status_word <= DO;
 		end 
@@ -496,7 +470,7 @@ wire vga_vs;
 wire vga_hs;
 
 
-wire [1:0]		tv_mode = {SW[4], SW[5]};
+wire [1:0]		tv_mode = 2'b0;
 
 wire 		tv_sync;
 wire [7:0] 	tv_luma;
@@ -541,10 +515,6 @@ reg [3:0] video_b;
 
 assign GPIO_1[29:26] = tv_luma[3:0];
 
-
-// assign GPIO_0[26:13] = {VGA_HS, VGA_VS, VGA_R, VGA_G, VGA_B};
-// assign GPIO_0[26:13] = {vga_hs, vga_vs, video_r, video_g, video_b};
-
 wire [1:0] 	lowcolor_b = {2{osd_active}} & {realcolor[7],1'b0};
 wire 		lowcolor_g = osd_active & realcolor[5];
 wire 		lowcolor_r = osd_active & realcolor[2];
@@ -570,60 +540,30 @@ mclk50mhz pll_for_sdram_0
 );
 
 
-parameter 					i_h_disp			=	12'd640;
-parameter 					i_h_bporch			=	12'd62;
+parameter					i_h_disp			=	12'd640;
+parameter					i_h_bporch			=	12'd62;
 
-parameter 					i_v_disp			=	12'd576;
-parameter 					i_v_bporch			=	12'd22;
-	
-parameter 					i_hs_polarity		=	1'b0;
-parameter 					i_vs_polarity		=	1'b0;
-parameter 					i_frame_interlaced	=	1'b0;
+parameter					i_v_disp			=	12'd576;
+parameter					i_v_bporch			=	12'd22;
 
-
-parameter 					o_h_disp			=	12'd640;
-parameter 					o_h_fporch			=	12'd16;
-parameter 					o_h_sync			=	12'd96;
-parameter 					o_h_bporch			=	12'd48;
-
-parameter 					o_v_disp			=	12'd350;
-parameter 					o_v_fporch			=	12'd37;
-parameter 					o_v_sync			=	12'd2;
-parameter 					o_v_bporch			=	12'd60;
-	
-parameter 					o_hs_polarity		=	1'b1;
-parameter 					o_vs_polarity		=	1'b0;
-parameter 					o_frame_interlaced	=	1'b0;
+parameter					i_hs_polarity		=	1'b0;
+parameter					i_vs_polarity		=	1'b0;
+parameter					i_frame_interlaced	=	1'b0;
 
 
+parameter					o_h_disp			=	12'd640;
+parameter					o_h_fporch			=	12'd16;
+parameter					o_h_sync			=	12'd96;
+parameter					o_h_bporch			=	12'd48;
 
-wire						i_hsync;
-wire						i_vsync;
+parameter					o_v_disp			=	12'd350;
+parameter					o_v_fporch			=	12'd37;
+parameter					o_v_sync			=	12'd2;
+parameter					o_v_bporch			=	12'd60;
 
-wire	[3:0]				i_vga_r;
-wire	[3:0]				i_vga_g;
-wire	[3:0]				i_vga_b;
-
-// vga vga_inst (
-
-// 	.clk				(	clk25					),
-// 	.reset				(	mreset_n				),
-
-// 	.hsync				(	i_hsync					),
-// 	.vsync				(	i_vsync					),
-
-// 	.vga_r				(	i_vga_r					),
-// 	.vga_g				(	i_vga_g					),
-// 	.vga_b				(	i_vga_b					)
-
-// );
-
-assign i_hsync = vga_hs;
-assign i_vsync = vga_vs;
-assign i_vga_r = video_r;
-assign i_vga_g = video_g;
-assign i_vga_b = video_b;
-
+parameter					o_hs_polarity		=	1'b1;
+parameter					o_vs_polarity		=	1'b0;
+parameter					o_frame_interlaced	=	1'b0;
 
 wire			o_hsync;
 wire			o_vsync;
@@ -665,19 +605,12 @@ converter #(
 	.clk100					(	clk100					),
 	.reset					(	mreset_n				),
 
-	.i_hsync				(	i_hsync					),
-	.i_vsync				(	i_vsync					),
+	.i_hsync				(	vga_hs					),
+	.i_vsync				(	vga_vs					),
 
-	.i_vga_r				(	i_vga_r					),
-	.i_vga_g				(	i_vga_g					),
-	.i_vga_b				(	i_vga_b					),
-
-	// .i_hsync				(	vga_hs					),
-	// .i_vsync				(	vga_vs					),
-
-	// .i_vga_r				(	video_r					),
-	// .i_vga_g				(	video_g					),
-	// .i_vga_b				(	video_b					),
+	.i_vga_r				(	video_r					),
+	.i_vga_g				(	video_g					),
+	.i_vga_b				(	video_b					),
 
 	.sdr_addr				(	sdr_addr				),
 	.sdr_bank_addr			(	sdr_bank_addr			),
@@ -699,14 +632,11 @@ converter #(
 );
 
 
-assign VGA_R = tv_mode[0] ? video_r : o_vga_r;
-assign VGA_G = tv_mode[0] ? video_g : o_vga_g;
-assign VGA_B = tv_mode[0] ? video_b : o_vga_b;
-assign VGA_VS= tv_mode[0] ? vga_vs : o_vsync;
-assign VGA_HS= tv_mode[0] ? vga_hs : o_hsync;
-
-
-
+assign VGA_R = SW[7] ? video_r : o_vga_r;
+assign VGA_G = SW[7] ? video_g : o_vga_g;
+assign VGA_B = SW[7] ? video_b : o_vga_b;
+assign VGA_VS= SW[7] ? vga_vs : o_vsync;
+assign VGA_HS= SW[7] ? vga_hs : o_hsync;
 
 ///////////
 // RST38 //
@@ -721,8 +651,6 @@ reg  int_rq_hist;
 oneshot #(10'd28) retrace_delay(clk24, cpu_ce, retrace, int_delay);
 oneshot #(10'd191) retrace_irq(clk24, cpu_ce, ~int_delay, int_rq_tick);
 
-//assign int_rq_tick_inte = ~interrupt_ack & INTE & int_rq_tick;
-
 always @(posedge clk24) begin
     int_rq_hist <= int_rq_tick;
     
@@ -736,7 +664,6 @@ end
 ///////////////////
 // PS/2 KEYBOARD //
 ///////////////////
-reg 		kbd_mod_rus;
 wire [7:0]	kbd_rowselect = ~vv55int_pa_out;
 wire [7:0]	kbd_rowbits;
 wire 		kbd_key_shift;
@@ -750,11 +677,10 @@ wire [5:0]	kbd_keys_osd;
 
 `ifdef WITH_KEYBOARD
 	vectorkeys kbdmatrix(
-		.clkk(clk24), 
-		.reset(~KEY[0]), 
+		.clk(clk24), 
+		.reset(mreset), 
 		.ps2_clk(PS2_CLK), 
 		.ps2_dat(PS2_DAT), 
-		.mod_rus(kbd_mod_rus), 
 		.rowselect(kbd_rowselect), 
 		.rowbits(kbd_rowbits), 
 		.key_shift(kbd_key_shift), 
@@ -765,7 +691,7 @@ wire [5:0]	kbd_keys_osd;
 		.key_bushold(kbd_key_scrolllock),
 		.key_osd(kbd_keys_osd),
 		.osd_active(scrollock_osd)
-		);
+	);
 `else
 	assign kbd_rowbits = 8'hff;
 	assign kbd_key_shift = 0;
@@ -833,8 +759,8 @@ wire vv55int_rd_n = ~io_read;//~DBIN;
 wire vv55int_wr_n = WR_n | ~cpu_ce;
 
 reg [7:0]	vv55int_pa_in;
-reg [7:0]	vv55int_pb_in;
-reg [7:0]	vv55int_pc_in;
+wire [7:0]	vv55int_pb_in;
+wire [7:0]	vv55int_pc_in;
 
 wire [7:0]	vv55int_pa_out;
 wire [7:0]	vv55int_pb_out;
@@ -875,23 +801,17 @@ always @(posedge clk24) begin
 	// port B
 	video_border_index <= vv55int_pb_out[3:0];	// == palette address for out $0C
 
-`ifdef WITH_CPU
-	video_mode512 <= vv55int_pb_out[4];
-`else
-	video_mode512 <= 1'b0;
-`endif
+	`ifdef WITH_CPU
+		video_mode512 <= vv55int_pb_out[4];
+	`else
+		video_mode512 <= 1'b0;
+	`endif
 	// port C
-	gledreg[9] <= vv55int_pc_out[3];		// RUS/LAT LED
+	rledreg[9] <= vv55int_pc_out[3];		// RUS/LAT LED
 end	
 
-always @(kbd_rowbits) vv55int_pb_in <= ~kbd_rowbits;
-always @(kbd_key_shift or kbd_key_ctrl or kbd_key_rus) begin
-	vv55int_pc_in[5] <= ~kbd_key_shift;
-	vv55int_pc_in[6] <= ~kbd_key_ctrl;
-	vv55int_pc_in[7] <= ~kbd_key_rus;
-end
-always @(tape_input, SW) vv55int_pc_in[4] <= ~SW[6] & tape_input;
-always @* vv55int_pc_in[3:0] <= 4'b1111;
+assign vv55int_pb_in = ~kbd_rowbits;
+assign vv55int_pc_in = {~kbd_key_rus, ~kbd_key_ctrl, ~kbd_key_shift, tape_input, vv55int_pc_out[3], 3'b000};
 
 
 //////////////////////
@@ -928,18 +848,18 @@ wire	[7:0]	vi53_odata;
 wire	[9:0]	vi53_testpin;
 
 `ifdef WITH_VI53
-pit8253 vi53(
-			clk24, 
-			cpu_ce, 
-			vi53_timer_ce, 
-			~address_bus_r[1:0], 
-			vi53_wren, 
-			vi53_rden, 
-			DO, 
-			vi53_odata, 
-			3'b111, 
-			vi53_out, 
-			vi53_testpin);
+	pit8253 vi53(
+				clk24, 
+				cpu_ce, 
+				vi53_timer_ce, 
+				~address_bus_r[1:0], 
+				vi53_wren, 
+				vi53_rden, 
+				DO, 
+				vi53_odata, 
+				3'b111, 
+				vi53_out, 
+				vi53_testpin);
 `endif
 
 
@@ -991,8 +911,6 @@ wire		osd_command_bushold = osd_command[0];
 wire		osd_command_f12		= osd_command[1];
 wire		osd_command_f11		= osd_command[2];
 
-wire [7:0]	floppy_leds;
-
 wire		floppy_sel = portmap_device[2:1] == 2'b11; // both 110 and 111
 wire		floppy_wren = ~WR_n & io_write & floppy_sel;
 wire		floppy_rden  = io_read & floppy_sel;
@@ -1001,57 +919,52 @@ wire		floppy_death_by_floppy;
 
 
 `ifdef WITH_FLOPPY
-wire [7:0]	floppy_odata;
-wire [7:0]	floppy_status;
+	wire [7:0]	floppy_odata;
 
-floppy flappy(
-	.clk(clk24), 
-	.ce(cpu_ce),  
-	.reset_n(KEY[0]), 		// to make it possible to change a floppy image, then press F11
-	
-	// sd card signals
-	.sd_dat(SD_DAT), 
-	.sd_dat3(SD_DAT3), 
-	.sd_cmd(SD_CMD), 
-	.sd_clk(SD_CLK), 
-	
-	// uart comms
-	.uart_txd(UART_TXD),
-	
-	// io ports
-	.hostio_addr({address_bus_r[2],~address_bus_r[1:0]}),
-	.hostio_idata(DO),
-	.hostio_odata(floppy_odata),
-	.hostio_rd(floppy_rden),
-	.hostio_wr(floppy_wren),
-	
-	// screen memory
-	.display_addr(osd_address),
-	.display_data(osd_data),
-	.display_wren(osd_wren),
-	.display_idata(osd_q),
-	
-	.keyboard_keys(kbd_keys_osd),
-	
-	.osd_command(osd_command),
-	
-	// debug 
-	.green_leds(floppy_leds),
-	//.red_leds(floppy_leds),
-	.debug(floppy_status),
-	.host_hold(floppy_death_by_floppy),
+	floppy flappy(
+		.clk(clk24), 
+		.ce(cpu_ce),  
+		.reset_n(KEY[0]), 		// to make it possible to change a floppy image, then press F11
+		
+		// sd card signals
+		.sd_dat(SD_DAT), 
+		.sd_dat3(SD_DAT3), 
+		.sd_cmd(SD_CMD), 
+		.sd_clk(SD_CLK), 
+		
+		// uart comms
+		.uart_txd(UART_TXD),
+		
+		// io ports
+		.hostio_addr({address_bus_r[2],~address_bus_r[1:0]}),
+		.hostio_idata(DO),
+		.hostio_odata(floppy_odata),
+		.hostio_rd(floppy_rden),
+		.hostio_wr(floppy_wren),
+		
+		// screen memory
+		.display_addr(osd_address),
+		.display_data(osd_data),
+		.display_wren(osd_wren),
+		.display_idata(osd_q),
+		
+		.keyboard_keys(kbd_keys_osd),
+		
+		.osd_command(osd_command),
+		
+		// debug 
+		.green_leds(),
+		.debug(),
+		.host_hold(floppy_death_by_floppy),
 	);
-	//green_leds, red_leds, debug, debugidata);
-
 `else 
-assign floppy_death_by_floppy = 0;
-wire [7:0]	floppy_odata = 
-`ifdef FLOPPYLESS_HAX
-	8'h00;
-`else
-	8'hFF;
-`endif	
-wire [7:0]	floppy_status = 8'hff;
+	assign floppy_death_by_floppy = 0;
+	wire [7:0]	floppy_odata = 
+	`ifdef FLOPPYLESS_HAX
+		8'h00;
+	`else
+		8'hFF;
+	`endif
 `endif
 
 
@@ -1062,6 +975,7 @@ wire [7:0]	floppy_status = 8'hff;
 wire			osd_hsync, osd_vsync; 	// provided by video.v
 reg				osd_active;
 reg	[7:0]		osd_colour;
+
 always @(posedge clk24)
 	if (scrollock_osd & osd_bg) begin
 		osd_active <= 1;
@@ -1079,22 +993,22 @@ wire[7:0]		osd_address;
 wire[7:0]		osd_q = osd_rq + 8'd32;
 
 `ifdef WITH_OSD
-textmode osd(
-	.clk(clk24),
-	.ce(tv_mode[0] ? ce6 : 1'b1),
-	.vsync(osd_vsync),
-	.hsync(osd_hsync),
-	.pixel(osd_fg),
-	.background(osd_bg),
-	.address(osd_address),
-	.data(osd_data - 8'd32),		// OSD encoding has 00 == 32
-	.wren(osd_wren),
-	.q(osd_rq)
-	);
+	textmode osd(
+		.clk(clk24),
+		.ce(tv_mode[0] ? ce6 : 1'b1),
+		.vsync(osd_vsync),
+		.hsync(osd_hsync),
+		.pixel(osd_fg),
+		.background(osd_bg),
+		.address(osd_address),
+		.data(osd_data - 8'd32),		// OSD encoding has 00 == 32
+		.wren(osd_wren),
+		.q(osd_rq)
+		);
 `else
-assign osd_fg = 0;
-assign osd_bg = 0;
-assign osd_rq  = 0;
+	assign osd_fg = 0;
+	assign osd_bg = 0;
+	assign osd_rq  = 0;
 `endif
 
 
@@ -1105,27 +1019,27 @@ assign osd_rq  = 0;
 wire [7:0]	ay_odata;
 
 `ifdef WITH_AY
-wire		ay_sel = portmap_device == 3'b101 && address_bus_r[1] == 0; // only ports $14 and $15
-wire		ay_wren = ~WR_n & io_write & ay_sel;
-wire		ay_rden = io_read & ay_sel;
-wire [7:0]	ay_sound;
+	wire		ay_sel = portmap_device == 3'b101 && address_bus_r[1] == 0; // only ports $14 and $15
+	wire		ay_wren = ~WR_n & io_write & ay_sel;
+	wire		ay_rden = io_read & ay_sel;
+	wire [7:0]	ay_sound;
 
-reg [2:0] aycectr;
-always @(posedge clk14) aycectr <= aycectr + 1'd1;
+	reg [2:0] aycectr;
+	always @(posedge clk14) aycectr <= aycectr + 1'd1;
 
-ayglue shrieker(.clk(clk14), 
-				.ce(aycectr == 0),
-				.reset_n(mreset_n), 
-				.address(address_bus_r[0]),
-				.data(DO), 
-				.q(ay_odata),
-				.wren(ay_wren),
-				.rden(ay_rden),
-				.sound(ay_sound));
+	ayglue shrieker(.clk(clk14), 
+					.ce(aycectr == 0),
+					.reset_n(mreset_n), 
+					.address(address_bus_r[0]),
+					.data(DO), 
+					.q(ay_odata),
+					.wren(ay_wren),
+					.rden(ay_rden),
+					.sound(ay_sound));
 `else
-wire [7:0] 	ay_sound = 8'b0;
-wire		ay_rden = 1'b0;
-assign		ay_odata = 8'hFF;
+	wire [7:0] 	ay_sound = 8'b0;
+	wire		ay_rden = 1'b0;
+	assign		ay_odata = 8'hFF;
 `endif
 
 
@@ -1149,8 +1063,6 @@ specialkeys skeys(
 				.o_osd(scrollock_osd)
 				);
 				
-always gledreg[8] <= disable_rom;				
-
 I2C_AV_Config 		u7(clk24,mreset_n,I2C_SCLK,I2C_SDAT);
 
 /////////////////
@@ -1197,17 +1109,4 @@ input		rden;
 
 assign odata = 8'h00;
 
-/*
-assign odata = fakepu_regs[addr];
-reg [7:0] fakepu_regs[3:0];
-always @(posedge clk24) if (ce) begin: _fake_pu
-	if (vv55pu_wren) begin
-		fakepu_regs[addr] = idata;
-	end
-end
-*/
-
 endmodule
-
-
-// $Id$

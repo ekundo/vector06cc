@@ -17,187 +17,180 @@
 //
 // --------------------------------------------------------------------
 
-module scan2matrix(c, scancode, mod_shift, mod_rus, qrow, qcol, qshift, qerror);
-input 				c;
-input [7:0] 		scancode;
-input 				mod_shift;
-input				mod_rus;
-output	reg[2:0]	qrow;
-output	reg[2:0]	qcol;
-output	reg			qshift;
-output  reg			qerror;
+module scan2matrix(
+	input				clk,
+	input		[7:0]	scancode,
+	input				jcuken_mode,
+	output	reg	[2:0]	qrow,
+	output	reg	[2:0]	qcol,
+	output  reg			qerror
+);
 
-wire[7:0] kr_none;
-wire[7:0] kr_shift;
+wire[6:0] jcuken_q;
+jcuken jcuken_inst(scancode, jcuken_q);
 
-krom1 kromkrom1(scancode, kr_none);
-krom2 kromshift(scancode, kr_shift);
+wire[6:0] qwerty_q;
+qwerty qwerty_inst(scancode, qwerty_q);
 
-always @(posedge c) begin
-	if (mod_shift) begin
-		qrow   <= 	kr_shift[6:4];
-		qcol   <= 	kr_shift[2:0];
-		qshift <= 	kr_shift[7];
-		qerror <=  &kr_shift;
-	end else begin
-		qrow   <= 	kr_none[6:4];
-		qcol   <= 	kr_none[2:0];
-		qshift <= 	kr_none[7];
-		qerror <=  &kr_none;
-	end
-end
+wire[6:0] common_q;
+common common_inst(scancode, common_q);
 
+
+always @(posedge clk)
+	if (~&common_q)
+		begin
+			qrow	<= 	common_q[5:3];
+			qcol	<= 	common_q[2:0];
+			qerror	<=	&common_q;
+		end
+	else
+		if (jcuken_mode)
+			begin
+				qrow	<= 	jcuken_q[5:3];
+				qcol	<= 	jcuken_q[2:0];
+				qerror	<=	&jcuken_q;
+			end
+		else
+			begin
+				qrow	<= 	qwerty_q[5:3];
+				qcol	<= 	qwerty_q[2:0];
+				qerror	<=	&qwerty_q;
+			end
 endmodule
 
+module common(
+	input		[7:0]	addr, 
+	output	reg	[6:0]	q
+);
 
-module krom1(addr, q);
-input [7:0] addr;
-output reg[7:0] q;
-
-always
+always @*
 	case (addr)
-		default:  q <= 8'hFF;
-	/*F5*/	8'h3: q <= 	8'h17;
-	/*F3*/	8'h4: q <= 	8'h15;
-	/*F1*/	8'h5: q <= 	8'h13;
-	/*F2*/	8'h6: q <= 	8'h14;
-	/*F4*/	8'hC: q <= 	8'h16;
-	/*TAB*/	8'hD: q <= 	8'h00;
-	/*ALT*/ 8'h11: q <=		8'h01; // PS
-	/*Q*/	8'h15: q <= 	8'h61;
-	/*1!*/	8'h16: q <= 	8'h21;
-	/*Z*/	8'h1A: q <= 	8'h72;
-	/*S*/	8'h1B: q <= 	8'h63;
-	/*A*/	8'h1C: q <= 	8'h41;
-	/*W*/	8'h1D: q <= 	8'h67;
-	/*2@*/	8'h1E: q <= 	8'h22;
-	/*C*/	8'h21: q <= 	8'h43;
-	/*X*/	8'h22: q <= 	8'h70;
-	/*D*/	8'h23: q <= 	8'h44;
-	/*E*/	8'h24: q <= 	8'h45;
-	/*4$*/	8'h25: q <= 	8'h24;
-	/*3#*/	8'h26: q <= 	8'h23;
-	/*]*/	8'h29: q <= 	8'h77;
-	/*V*/	8'h2A: q <= 	8'h66;
-	/*F*/	8'h2B: q <= 	8'h46;
-	/*T*/	8'h2C: q <=		8'h64;
-	/*R*/	8'h2D: q <= 	8'h62;
-	/*5%*/	8'h2E: q <= 	8'h25;
-	/*N*/	8'h31: q <= 	8'h56;
-	/*B*/	8'h32: q <= 	8'h42;
-	/*H*/	8'h33: q <= 	8'h50;
-	/*G*/	8'h34: q <= 	8'h47;
-	/*Y*/	8'h35: q <= 	8'h71;
-	/*6^*/	8'h36: q <= 	8'h26;
-	/*M*/	8'h3A: q <= 	8'h55;
-	/*J*/	8'h3B: q <= 	8'h52;
-	/*U*/	8'h3C: q <=		8'h65;
-	/*7&*/	8'h3D: q <= 	8'h27;
-	/*8**/	8'h3E: q <= 	8'h30;
-	/*,<*/	8'h41: q <= 	8'h34;
-	/*K*/	8'h42: q <= 	8'h53;
-	/*I*/	8'h43: q <= 	8'h51;
-	/*O*/	8'h44: q <= 	8'h57;
-	/*0)*/	8'h45: q <= 	8'h20;
-	/*9(*/	8'h46: q <= 	8'h31;
-	/*.>*/	8'h49: q <= 	8'h36;
-	/*/?*/	8'h4A: q <= 	8'h37;
-	/*L*/	8'h4B: q <= 	8'h54;
-	/*;:*/	8'h4C: q <= 	8'h33;
-	/*P*/	8'h4D: q <= 	8'h60;
-	/*-_*/	8'h4E: q <= 	8'h35;
-	/*'"*/	8'h52: q <= 	8'hA7;		//+
-	/*[*/	8'h54: q <= 	8'h73;
-	/*=+*/	8'h55: q <= 	8'hB5;		//+
-	/*ENTR*/8'h5A: q <= 	8'h02;
-	/*]*/	8'h5B: q <= 	8'h75;
-	/*\*/	8'h5D: q <= 	8'h74;
-	/*BS*/	8'h66: q <= 	8'h03;
-	/*LT*/	8'h6B: q <= 	8'h04;
-	/*HOME*/8'h6C: q <= 	8'h10;
-	/*DEL*/	8'h71: q <= 	8'h11;
-	/*DN*/	8'h72: q <= 	8'h07;
-	/*RT*/	8'h74: q <= 	8'h06;
-	/*UP*/	8'h75: q <= 	8'h05;
-	/*ESC*/	8'h76: q <= 	8'h12;
-	/*`~*/  8'h0E: q <=		8'hC0;		//+
+		default:	q <= 	{7'b1111111};
+		8'h0D:		q <= 	{4'h0, 3'h0};
+		8'h1F:		q <= 	{4'h0, 3'h1};
+		8'h27:		q <= 	{4'h0, 3'h1};
+		8'h5A:		q <= 	{4'h0, 3'h2};
+		8'h66:		q <= 	{4'h0, 3'h3};
+		8'h6B:		q <= 	{4'h0, 3'h4};
+		8'h71:		q <= 	{4'h0, 3'h4};
+		8'h75:		q <= 	{4'h0, 3'h5};
+		8'h6C:		q <= 	{4'h0, 3'h5};
+		8'h74:		q <= 	{4'h0, 3'h6};
+		8'h7A:		q <= 	{4'h0, 3'h6};
+		8'h72:		q <= 	{4'h0, 3'h7};
+		8'h69:		q <= 	{4'h0, 3'h7};
+		8'h70:		q <= 	{4'h1, 3'h0};
+		8'h7D:		q <= 	{4'h1, 3'h1};
+		8'h76:		q <= 	{4'h1, 3'h2};
+		8'h05:		q <= 	{4'h1, 3'h3};
+		8'h06:		q <= 	{4'h1, 3'h4};
+		8'h04:		q <= 	{4'h1, 3'h5};
+		8'h0C:		q <= 	{4'h1, 3'h6};
+		8'h03:		q <= 	{4'h1, 3'h7};
+		8'h45:		q <= 	{4'h2, 3'h0};
+		8'h16:		q <= 	{4'h2, 3'h1};
+		8'h1E:		q <= 	{4'h2, 3'h2};
+		8'h26:		q <= 	{4'h2, 3'h3};
+		8'h25:		q <= 	{4'h2, 3'h4};
+		8'h2E:		q <= 	{4'h2, 3'h5};
+		8'h36:		q <= 	{4'h2, 3'h6};
+		8'h3D:		q <= 	{4'h2, 3'h7};
+		8'h3E:		q <= 	{4'h3, 3'h0};
+		8'h46:		q <= 	{4'h3, 3'h1};
+		8'h0E:		q <= 	{4'h3, 3'h3};
+		8'h4E:		q <= 	{4'h3, 3'h5};
+		8'h55:		q <= 	{4'h3, 3'h7};
+		8'h52:		q <= 	{4'h7, 3'h4};
+		8'h29:		q <= 	{4'h7, 3'h7};
 	endcase
 endmodule
 
 
+module jcuken(
+	input		[7:0]	addr, 
+	output	reg	[6:0]	q
+);
 
-module krom2(addr, q);
-input [7:0] addr;
-output reg[7:0] q;
-
-always
+always @*
 	case (addr)
-		default:  q <= 	8'hFF;
-	/*F5*/	8'h3: q <= 	8'h17;
-	/*F3*/	8'h4: q <= 	8'h15;
-	/*F1*/	8'h5: q <= 	8'h13;
-	/*F2*/	8'h6: q <= 	8'h14;
-	/*F4*/	8'hC: q <= 	8'h16;
-	/*TAB*/	8'hD: q <= 	8'h00;
-	/*ALT*/ 8'h11: q <=		8'h01; // PS
-	/*Q*/	8'h15: q <= 	8'h61;
-	/*1!*/	8'h16: q <= 	8'h21;
-	/*Z*/	8'h1A: q <= 	8'h72;
-	/*S*/	8'h1B: q <= 	8'h63;
-	/*A*/	8'h1C: q <= 	8'h41;
-	/*W*/	8'h1D: q <= 	8'h67;
-	/*2@*/	8'h1E: q <= 	8'hC0;		//x-shift
-	/*C*/	8'h21: q <= 	8'h43;
-	/*X*/	8'h22: q <= 	8'h70;
-	/*D*/	8'h23: q <= 	8'h44;
-	/*E*/	8'h24: q <= 	8'h45;
-	/*4$*/	8'h25: q <= 	8'h24;
-	/*3#*/	8'h26: q <= 	8'h23;
-	/*]*/	8'h29: q <= 	8'h77;
-	/*V*/	8'h2A: q <= 	8'h66;
-	/*F*/	8'h2B: q <= 	8'h46;
-	/*T*/	8'h2C: q <=		8'h64;
-	/*R*/	8'h2D: q <= 	8'h62;
-	/*5%*/	8'h2E: q <= 	8'h25;
-	/*N*/	8'h31: q <= 	8'h56;
-	/*B*/	8'h32: q <= 	8'h42;
-	/*H*/	8'h33: q <= 	8'h50;
-	/*G*/	8'h34: q <= 	8'h47;
-	/*Y*/	8'h35: q <= 	8'h71;
-	/*6^*/	8'h36: q <= 	8'hF6;		// x-shift
-	/*M*/	8'h3A: q <= 	8'h55;
-	/*J*/	8'h3B: q <= 	8'h52;
-	/*U*/	8'h3C: q <=		8'h65;
-	/*7&*/	8'h3D: q <= 	8'h26;
-	/*8**/	8'h3E: q <= 	8'h32;
-	/*,<*/	8'h41: q <= 	8'h34;
-	/*K*/	8'h42: q <= 	8'h53;
-	/*I*/	8'h43: q <= 	8'h51;
-	/*O*/	8'h44: q <= 	8'h57;
-	/*0)*/	8'h45: q <= 	8'h31;
-	/*9(*/	8'h46: q <= 	8'h30;
-	/*.>*/	8'h49: q <= 	8'h36;
-	/*/?*/	8'h4A: q <= 	8'h37;
-	/*L*/	8'h4B: q <= 	8'h54;
-	/*;:*/	8'h4C: q <= 	8'hB2;	// x-shift
-	/*P*/	8'h4D: q <= 	8'h60;
-	/*-_*/	8'h4E: q <= 	8'h03;	// underscore
-	/*'"*/	8'h52: q <= 	8'h22;	// +
-	/*[*/	8'h54: q <= 	8'h73;
-	/*=+*/	8'h55: q <= 	8'h33;
-	/*ENTR*/8'h5A: q <= 	8'h02;
-	/*]*/	8'h5B: q <= 	8'h75;
-	/*\*/	8'h5D: q <= 	8'h74;
-	/*BS*/	8'h66: q <= 	8'h03;
-	/*LT*/	8'h6B: q <= 	8'h04;
-	/*HOME*/8'h6C: q <= 	8'h10;
-	/*DEL*/	8'h71: q <= 	8'h11;
-	/*DN*/	8'h72: q <= 	8'h07;
-	/*RT*/	8'h74: q <= 	8'h06;
-	/*UP*/	8'h75: q <= 	8'h05;
-	/*ESC*/	8'h76: q <= 	8'h12;
-	/*`~*/  8'h0E: q <=		8'h76;
+		default:	q <= 	{7'b1111111};
+		8'h5B:		q <= 	{4'h3, 3'h2};
+		8'h4A:		q <= 	{4'h3, 3'h4};
+		8'h5D:		q <= 	{4'h3, 3'h6};
+		8'h49:		q <= 	{4'h4, 3'h0};
+		8'h2B:		q <= 	{4'h4, 3'h1};
+		8'h41:		q <= 	{4'h4, 3'h2};
+		8'h1D:		q <= 	{4'h4, 3'h3};
+		8'h4B:		q <= 	{4'h4, 3'h4};
+		8'h2C:		q <= 	{4'h4, 3'h5};
+		8'h1C:		q <= 	{4'h4, 3'h6};
+		8'h3C:		q <= 	{4'h4, 3'h7};
+		8'h54:		q <= 	{4'h5, 3'h0};
+		8'h32:		q <= 	{4'h5, 3'h1};
+		8'h15:		q <= 	{4'h5, 3'h2};
+		8'h2D:		q <= 	{4'h5, 3'h3};
+		8'h42:		q <= 	{4'h5, 3'h4};
+		8'h2A:		q <= 	{4'h5, 3'h5};
+		8'h35:		q <= 	{4'h5, 3'h6};
+		8'h3B:		q <= 	{4'h5, 3'h7};
+		8'h34:		q <= 	{4'h6, 3'h0};
+		8'h1A:		q <= 	{4'h6, 3'h1};
+		8'h33:		q <= 	{4'h6, 3'h2};
+		8'h21:		q <= 	{4'h6, 3'h3};
+		8'h31:		q <= 	{4'h6, 3'h4};
+		8'h24:		q <= 	{4'h6, 3'h5};
+		8'h4C:		q <= 	{4'h6, 3'h6};
+		8'h23:		q <= 	{4'h6, 3'h7};
+		8'h3A:		q <= 	{4'h7, 3'h0};
+		8'h1B:		q <= 	{4'h7, 3'h1};
+		8'h4D:		q <= 	{4'h7, 3'h2};
+		8'h43:		q <= 	{4'h7, 3'h3};
+		8'h44:		q <= 	{4'h7, 3'h5};
+		8'h22:		q <= 	{4'h7, 3'h6};
 	endcase
 endmodule
 
-// $Id$
+
+module qwerty(
+	input		[7:0]	addr, 
+	output	reg	[6:0]	q
+);
+
+always @*
+	case (addr)
+		default:	q <= 	{7'b1111111};
+		8'h4C:		q <= 	{4'h3, 3'h2};
+		8'h41:		q <= 	{4'h3, 3'h4};
+		8'h49:		q <= 	{4'h3, 3'h6};
+		8'h5D:		q <= 	{4'h4, 3'h0};
+		8'h1C:		q <= 	{4'h4, 3'h1};
+		8'h32:		q <= 	{4'h4, 3'h2};
+		8'h21:		q <= 	{4'h4, 3'h3};
+		8'h23:		q <= 	{4'h4, 3'h4};
+		8'h24:		q <= 	{4'h4, 3'h5};
+		8'h2B:		q <= 	{4'h4, 3'h6};
+		8'h34:		q <= 	{4'h4, 3'h7};
+		8'h33:		q <= 	{4'h5, 3'h0};
+		8'h43:		q <= 	{4'h5, 3'h1};
+		8'h3B:		q <= 	{4'h5, 3'h2};
+		8'h42:		q <= 	{4'h5, 3'h3};
+		8'h4B:		q <= 	{4'h5, 3'h4};
+		8'h3A:		q <= 	{4'h5, 3'h5};
+		8'h31:		q <= 	{4'h5, 3'h6};
+		8'h44:		q <= 	{4'h5, 3'h7};
+		8'h4D:		q <= 	{4'h6, 3'h0};
+		8'h15:		q <= 	{4'h6, 3'h1};
+		8'h2D:		q <= 	{4'h6, 3'h2};
+		8'h1B:		q <= 	{4'h6, 3'h3};
+		8'h2C:		q <= 	{4'h6, 3'h4};
+		8'h3C:		q <= 	{4'h6, 3'h5};
+		8'h2A:		q <= 	{4'h6, 3'h6};
+		8'h1D:		q <= 	{4'h6, 3'h7};
+		8'h22:		q <= 	{4'h7, 3'h0};
+		8'h35:		q <= 	{4'h7, 3'h1};
+		8'h1A:		q <= 	{4'h7, 3'h2};
+		8'h54:		q <= 	{4'h7, 3'h3};
+		8'h5B:		q <= 	{4'h7, 3'h5};
+		8'h4A:		q <= 	{4'h7, 3'h6};
+	endcase
+endmodule

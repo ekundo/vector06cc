@@ -1,0 +1,5 @@
+db/
+.qsys_edit/
+**/.DS_Store
+**/*.vcd
+**/*.vvp
