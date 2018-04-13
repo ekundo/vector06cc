@@ -1,5 +1,9 @@
 db/
+incremental_db/
+reports/
+simulation/
 .qsys_edit/
+**/graybox_tmp/
 **/.DS_Store
 **/*.vcd
 **/*.vvp

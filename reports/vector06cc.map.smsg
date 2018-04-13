@@ -1,7 +1,0 @@
-Warning (10273): Verilog HDL warning at vga_reader.v(93): extended using "x" or "z"
-Warning (10273): Verilog HDL warning at sdram_cntr.v(388): extended using "x" or "z"
-Info (10281): Verilog HDL Declaration information at vector06cc.v(148): object "VGA_VS" differs only in case from object "vga_vs" in the same scope
-Info (10281): Verilog HDL Declaration information at vector06cc.v(147): object "VGA_HS" differs only in case from object "vga_hs" in the same scope
-Info (10281): Verilog HDL Declaration information at dma_rw.v(27): object "BUSY" differs only in case from object "busy" in the same scope
-Warning (10268): Verilog HDL information at video.v(218): always construct contains both blocking and non-blocking assignments
-Info (10281): Verilog HDL Declaration information at framebuffer.v(45): object "SRAM_ADDR" differs only in case from object "sram_addr" in the same scope
