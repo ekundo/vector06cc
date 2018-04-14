@@ -9,3 +9,5 @@ simulation/
 **/*.vvp
 **/*.bak
 serv_req_info.txt
+vector06cc.qws
+**/*.stp
