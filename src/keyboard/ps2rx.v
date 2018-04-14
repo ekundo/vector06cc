@@ -1,5 +1,3 @@
-`default_nettype none
-
 module ps2rx(
 	input				clk,
 	input				reset,
@@ -7,7 +5,7 @@ module ps2rx(
 	input				ps2_data,
 	input				samplen,
 	input				rden,
-	output		[7:0]	q,
+	output	reg	[7:0]	q,
 	output	reg			dsr,
 	output				overflow);
 
@@ -33,7 +31,6 @@ always @(posedge clk) begin
 end
 
 reg [9:0] shiftreg;
-reg [7:0] q;
 reg [3:0] bitcount = 4'b0;
 
 always @(posedge clk) begin

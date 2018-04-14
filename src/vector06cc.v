@@ -36,7 +36,7 @@
 `define WITH_KEYBOARD
 `define WITH_VI53
 `define WITH_AY
-`define WITH_FLOPPY
+// `define WITH_FLOPPY
 `define WITH_OSD
 `define WITH_DE1_JTAG
 `define JTAG_AUTOHOLD
@@ -632,11 +632,16 @@ converter #(
 );
 
 
-assign VGA_R = SW[7] ? video_r : o_vga_r;
-assign VGA_G = SW[7] ? video_g : o_vga_g;
-assign VGA_B = SW[7] ? video_b : o_vga_b;
-assign VGA_VS= SW[7] ? vga_vs : o_vsync;
-assign VGA_HS= SW[7] ? vga_hs : o_hsync;
+// assign VGA_R = SW[7] ? video_r : o_vga_r;
+// assign VGA_G = SW[7] ? video_g : o_vga_g;
+// assign VGA_B = SW[7] ? video_b : o_vga_b;
+// assign VGA_VS= SW[7] ? vga_vs : o_vsync;
+// assign VGA_HS= SW[7] ? vga_hs : o_hsync;
+assign VGA_R = o_vga_r;
+assign VGA_G = o_vga_g;
+assign VGA_B = o_vga_b;
+assign VGA_VS= o_vsync;
+assign VGA_HS= o_hsync;
 
 ///////////
 // RST38 //
@@ -690,7 +695,8 @@ wire [5:0]	kbd_keys_osd;
 		.key_blkvvod(kbd_key_blkvvod_phy),
 		.key_bushold(kbd_key_scrolllock),
 		.key_osd(kbd_keys_osd),
-		.osd_active(scrollock_osd)
+		.osd_active(scrollock_osd),
+		.ps2_cmd(SW[7:0])
 	);
 `else
 	assign kbd_rowbits = 8'hff;

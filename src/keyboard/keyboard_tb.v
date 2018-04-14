@@ -543,7 +543,7 @@ task read;
                 read_shiftreg <= {ps2_data, read_shiftreg[8:1]};
                 repeat (50) @(posedge clk);
             end
-            if (read_shiftreg[8:8] != ^read_shiftreg[7:0])
+            if (read_shiftreg[8:8] != ~^read_shiftreg[7:0])
                 begin
                     $display("ASSERTION FAILURE: unexpected parity bit");
                     $finish;
@@ -583,7 +583,7 @@ initial
         repeat (10) @(posedge clk);
 
 
-        read(8'hAD);
+        read(8'hFF);
 
         qwerty();
         check_common();
@@ -628,7 +628,8 @@ vectorkeys vectorkeys_inst (
     .key_blkvvod(key_blkvvod),
     .key_blksbr(key_blksbr),
     .key_bushold(key_bushold),
-    .osd_active(1'b0)
+    .osd_active(1'b0),
+    .ps2_cmd(8'hFF)
 );
 
 endmodule

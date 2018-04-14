@@ -35,6 +35,7 @@ module vectorkeys(
 	inout				ps2_dat,
 	input	[7:0]		rowselect,		// PA output inverted
 	input				osd_active,
+	input	[7:0]		ps2_cmd,
 	output	reg[7:0]	rowbits,		// PB input  inverted
 	output	reg			key_shift,
 	output	reg			key_ctrl,
@@ -273,7 +274,7 @@ always @(posedge clk) begin
 				end
 			
 			18: begin
-					ps2d	<=	8'hAD;
+					ps2d	<=	ps2_cmd;
 					ps2wren	<=	1'b1;
 					state	<=	19;
 				end

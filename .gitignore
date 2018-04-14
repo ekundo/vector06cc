@@ -7,3 +7,5 @@ simulation/
 **/.DS_Store
 **/*.vcd
 **/*.vvp
+**/*.bak
+serv_req_info.txt

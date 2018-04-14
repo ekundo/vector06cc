@@ -1,5 +1,3 @@
-`default_nettype none
-
 module ps2tx(
 	input			clk,
 	input			reset,
@@ -40,7 +38,7 @@ always @(posedge clk)
 						begin
 							state		<=	4'd1;
 							bitcount	<=	4'd0;
-							shiftreg	<=	{^d, d};
+							shiftreg	<=	{~^d, d};
 						end
 				4'd1:
 					begin
@@ -60,40 +58,43 @@ always @(posedge clk)
 						state			<=	4'd4;
 					end
 				4'd4:
-					if (ps2_clk == 1'b0)
+					if (ps2_clk == 1'b1 && ps2_data == 1'b0)
 						state			<=	4'd5;
 				4'd5:
+					if (ps2_clk == 1'b0)
+						state			<=	4'd6;
+				4'd6:
 					begin
 						ps2_datar		<=	shiftreg[0];
-						state			<= 4'd6;
+						state			<= 4'd7;
 					end
-				4'd6:
-					if (ps2_clk == 1'b1)
-						state			<=	4'd7;
 				4'd7:
-					if (ps2_clk == 1'b0)
+					if (ps2_clk == 1'b1)
 						state			<=	4'd8;
 				4'd8:
+					if (ps2_clk == 1'b0)
+						state			<=	4'd9;
+				4'd9:
 					if (bitcount < 4'd8)
 						begin
 							bitcount	<=	bitcount + 4'd1;
 							shiftreg	<=	{1'b0, shiftreg[8:1]};
-							state		<=	4'd5;
+							state		<=	4'd6;
 						end
 					else
-						state			<=	4'd9;
-				4'd9:
+						state			<=	4'd10;
+				4'd10:
 					begin
 						ps2_datar		<=	1'bZ;
-						state			<=	4'd10;
-					end
-				4'd10:
-					if (ps2_data == 1'b0)
 						state			<=	4'd11;
+					end
 				4'd11:
-					if (ps2_clk == 1'b0)
+					if (ps2_data == 1'b0)
 						state			<=	4'd12;
 				4'd12:
+					if (ps2_clk == 1'b0)
+						state			<=	4'd13;
+				4'd13:
 					if (ps2_data == 1'b1 && ps2_clk == 1'b1)
 						state			<=	4'd0;
 			endcase
