@@ -15,6 +15,21 @@ assign	ps2_clk = ps2_clkr;
 assign	ps2_data = ps2_datar;
 
 
+reg	[7:0]	ps2_clk_filter;
+wire		ps2_clk_filtered;
+
+always @(posedge clk)
+	if (reset)
+		ps2_clk_filter	<=	8'b0;
+	else
+		ps2_clk_filter	<=	{ps2_clk_filter[6:0], ps2_clk};
+
+assign ps2_clk_filtered = 
+			(ps2_clk_filter == 8'b11111111) ? 1'b1 :
+			(ps2_clk_filter == 8'b00000000) ? 1'b0 :
+			ps2_clk_filtered;
+
+
 reg	[3:0]	state;
 reg	[11:0]	clock_delay;
 reg [8:0]	shiftreg;
@@ -58,10 +73,10 @@ always @(posedge clk)
 						state			<=	4'd4;
 					end
 				4'd4:
-					if (ps2_clk == 1'b1 && ps2_data == 1'b0)
+					if (ps2_clk_filtered == 1'b1 && ps2_data == 1'b0)
 						state			<=	4'd5;
 				4'd5:
-					if (ps2_clk == 1'b0)
+					if (ps2_clk_filtered == 1'b0)
 						state			<=	4'd6;
 				4'd6:
 					begin
@@ -69,10 +84,10 @@ always @(posedge clk)
 						state			<= 4'd7;
 					end
 				4'd7:
-					if (ps2_clk == 1'b1)
+					if (ps2_clk_filtered == 1'b1)
 						state			<=	4'd8;
 				4'd8:
-					if (ps2_clk == 1'b0)
+					if (ps2_clk_filtered == 1'b0)
 						state			<=	4'd9;
 				4'd9:
 					if (bitcount < 4'd8)
@@ -92,10 +107,10 @@ always @(posedge clk)
 					if (ps2_data == 1'b0)
 						state			<=	4'd12;
 				4'd12:
-					if (ps2_clk == 1'b0)
+					if (ps2_clk_filtered == 1'b0)
 						state			<=	4'd13;
 				4'd13:
-					if (ps2_data == 1'b1 && ps2_clk == 1'b1)
+					if (ps2_data == 1'b1 && ps2_clk_filtered == 1'b1)
 						state			<=	4'd0;
 			endcase
 		end

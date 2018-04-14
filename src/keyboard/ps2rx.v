@@ -19,13 +19,29 @@ reg [7:0] qreg;
 
 reg [1:0] state = 2'b00;
 
+
+reg	[7:0]	ps2_clk_filter;
+wire		ps2_clk_filtered;
+
+always @(posedge clk)
+	if (reset)
+		ps2_clk_filter	<=	8'b0;
+	else
+		ps2_clk_filter	<=	{ps2_clk_filter[6:0], ps2_clk};
+
+assign ps2_clk_filtered = 
+			(ps2_clk_filter == 8'b11111111) ? 1'b1 :
+			(ps2_clk_filter == 8'b00000000) ? 1'b0 :
+			ps2_clk_filtered;
+
+
 reg [4:0] sampledelay;
 reg [1:0] samplebuf;
 reg sample_ce;
 always @(posedge clk) begin
 	if (samplen)
 		begin
-			samplebuf <= {samplebuf[0], ps2_clk};
+			samplebuf <= {samplebuf[0], ps2_clk_filtered};
 			sample_ce <= samplebuf[1] & ~samplebuf[0];
 		end
 end
