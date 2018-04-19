@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 module keyboard_tb();
 
-reg reset, clk, ps2_clkr, ps2_datar, rd_en;
+reg reset, clk, ps2_clkr, ps2_datar, rd_en, led_rus;
 reg [7:0] rowselect;
 wire dsr, key_ctrl, key_shift, key_rus, key_blkvvod, key_blksbr, key_bushold, ps2_clk, ps2_data;
 wire [7:0] rowbits;
@@ -524,7 +524,7 @@ task read;
     begin
         ps2_data_wait = 0;
         read_shiftreg = 9'b0;
-        while (ps2_data && ps2_data_wait < 4000)
+        while (ps2_data && ps2_data_wait < 6000)
             begin
                 repeat (1) @(posedge clk);
                 ps2_data_wait = ps2_data_wait + 1;
@@ -577,13 +577,14 @@ initial
         ps2_datar   <= 1'bZ;
         rd_en       <= 0;
         rowselect   <= 8'h00;
+        led_rus     <= 1'b0;
 
         repeat (10) @(posedge clk);
         reset		<= 0;
         repeat (10) @(posedge clk);
 
 
-        read(8'hFF);
+        read(8'hF4);
 
         qwerty();
         check_common();
@@ -599,6 +600,19 @@ initial
         check_lshift_z();
         check_rshift_z();
 
+        led_rus <= 1'b1;
+        repeat (1) @(posedge clk);
+        read(8'hED);
+        scan(8'hFA);
+        read(8'b00000100);
+        scan(8'hFA);
+
+        led_rus <= 1'b0;
+        repeat (1) @(posedge clk);
+        read(8'hED);
+        scan(8'hFA);
+        read(8'b00000000);
+        scan(8'hFA);
 
         $finish;
     end
@@ -629,7 +643,8 @@ vectorkeys vectorkeys_inst (
     .key_blksbr(key_blksbr),
     .key_bushold(key_bushold),
     .osd_active(1'b0),
-    .ps2_cmd(8'hFF)
+    .led_rus(led_rus),
+    .retrace(1'b0)
 );
 
 endmodule

@@ -36,7 +36,7 @@
 `define WITH_KEYBOARD
 `define WITH_VI53
 `define WITH_AY
-// `define WITH_FLOPPY
+`define WITH_FLOPPY
 `define WITH_OSD
 `define WITH_DE1_JTAG
 `define JTAG_AUTOHOLD
@@ -311,6 +311,7 @@ end
 /////////////////
 assign GPIO_0[8:0] = {clk24, ce12, ce6, ce3, vi53_timer_ce, video_slice, clkpal4FSC, 1'b1, tv_test[0]};
 assign GPIO_0[14:13] = {PS2_CLK, PS2_DAT};
+assign GPIO_0[16:15] = {retrace, vv55int_pc_out[3]};
 
 /////////////////
 // CPU SECTION //
@@ -696,7 +697,8 @@ wire [5:0]	kbd_keys_osd;
 		.key_bushold(kbd_key_scrolllock),
 		.key_osd(kbd_keys_osd),
 		.osd_active(scrollock_osd),
-		.ps2_cmd(SW[7:0])
+		.led_rus(vv55int_pc_out[3]),
+		.retrace(retrace)
 	);
 `else
 	assign kbd_rowbits = 8'hff;
@@ -772,10 +774,6 @@ wire [7:0]	vv55int_pa_out;
 wire [7:0]	vv55int_pb_out;
 wire [7:0]	vv55int_pc_out;
 
-wire [7:0] vv55int_pa_oe_n;
-wire [7:0] vv55int_pb_oe_n;
-wire [7:0] vv55int_pc_oe_n;
-
 I82C55 vv55int(
 	vv55int_addr,
 	vv55int_idata,
@@ -788,15 +786,15 @@ I82C55 vv55int(
 	
 	vv55int_pa_in,
 	vv55int_pa_out,
-	vv55int_pa_oe_n,				// enable always
+	1'b0,							// enable always
 	
 	vv55int_pb_in,					// see keyboard
 	vv55int_pb_out,
-	vv55int_pb_oe_n,				// enable always
+	1'b0,							// enable always
 	
 	vv55int_pc_in,
 	vv55int_pc_out,
-	vv55int_pc_oe_n,				// enable always
+	1'b0,							// enable always
 	
 	mreset, 	// active 1
 	

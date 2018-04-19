@@ -35,7 +35,8 @@ module vectorkeys(
 	inout				ps2_dat,
 	input	[7:0]		rowselect,		// PA output inverted
 	input				osd_active,
-	input	[7:0]		ps2_cmd,
+	input				led_rus,
+	input				retrace,
 	output	reg[7:0]	rowbits,		// PB input  inverted
 	output	reg			key_shift,
 	output	reg			key_ctrl,
@@ -45,6 +46,26 @@ module vectorkeys(
 	output	reg			key_bushold,
 	output	reg[5:0]	key_osd
 );
+
+
+reg		[1:0]	led_rus_reg, led_scroll_reg;
+wire			led_rus_ce, led_scroll_ce;
+
+always @(posedge clk)
+	if (reset)
+		begin
+			led_rus_reg			<=	1'b0;
+			led_scroll_reg		<=	1'b0;
+		end
+	else
+		begin
+			if (!retrace)
+				led_rus_reg		<=	{led_rus_reg[0], led_rus};
+			led_scroll_reg		<=	{led_scroll_reg[0], osd_active};
+		end
+
+assign led_rus_ce = ^led_rus_reg;
+assign led_scroll_ce = ^led_scroll_reg;
 
 
 reg				ps2wren;
@@ -132,6 +153,9 @@ always @(posedge clk) begin
 						ps2rden <= 1;
 						state <= 3;
 					end
+				else
+					if (led_rus_ce || led_scroll_ce)
+						state <= 21;
 
 			3:	begin
 					ps2rden <= 0;
@@ -274,7 +298,7 @@ always @(posedge clk) begin
 				end
 			
 			18: begin
-					ps2d	<=	ps2_cmd;
+					ps2d	<=	8'hF4;
 					ps2wren	<=	1'b1;
 					state	<=	19;
 				end
@@ -287,6 +311,60 @@ always @(posedge clk) begin
 
 			20: if (!ps2write)
 					state	<=	1;
+
+			21: begin
+					ps2d	<=	8'hED;
+					ps2wren	<=	1'b1;
+					state	<=	22;
+				end
+
+			22: begin
+					ps2d	<=	8'bZ;
+					ps2wren	<=	1'b0;
+					state	<=	23;
+				end
+
+			23:	if (ps2dsr)
+					begin
+						ps2rden <= 1;
+						state <= 24;
+					end
+
+			24:	begin
+					ps2rden <= 0;
+					state <= 25;
+				end
+
+			25: if (ps2q == 8'hFA)
+					state <= 26;
+				else
+					state <= 1;
+
+			26: begin
+					ps2d	<=	{ 5'b0, led_rus, 1'b0, osd_active};
+					ps2wren	<=	1'b1;
+					state	<=	27;
+				end
+
+			27: begin
+					ps2d	<=	8'bZ;
+					ps2wren	<=	1'b0;
+					state	<=	28;
+				end
+
+			28:	if (ps2dsr)
+					begin
+						ps2rden <= 1;
+						state <= 29;
+					end
+
+			29:	begin
+					ps2rden <= 0;
+					state <= 30;
+				end
+
+			30: state <= 1;
+
 		endcase
 end
 
