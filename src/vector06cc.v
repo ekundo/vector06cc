@@ -165,8 +165,8 @@ output			SD_CLK;					//	SD Card Clock			(SCK)
 output			UART_TXD;
 input			UART_RXD;
 
-output [26:0] 	GPIO_0;
-output [35:0]	GPIO_1;
+output	[26:0] 	GPIO_0;
+inout	[35:0]	GPIO_1;
 
 output	[11:0]	sdr_addr;
 output	[1:0]	sdr_bank_addr;
@@ -513,8 +513,6 @@ palette_ram paletteram(.address(paletteram_adr),
 reg [3:0] video_r;
 reg [3:0] video_g;
 reg [3:0] video_b;
-
-assign GPIO_1[29:26] = tv_luma[3:0];
 
 wire [1:0] 	lowcolor_b = {2{osd_active}} & {realcolor[7],1'b0};
 wire 		lowcolor_g = osd_active & realcolor[5];
@@ -923,7 +921,60 @@ wire		floppy_death_by_floppy;
 
 
 `ifdef WITH_FLOPPY
-	wire [7:0]	floppy_odata;
+
+	wire	[7:0]	floppy_odata;
+
+	wire	[7:0]	fdc_address_bus_n;
+	wire	[2:0]	fdd_address_bus;
+
+
+	assign fdc_address_bus_n	=	SW[7]		?	~address_bus_r	:	8'b1111111;
+	assign fdd_address_bus		=	SW[7]		?	3'b000			:	{address_bus_r[2],~address_bus_r[1:0]};
+
+	wire			fdc_wren_n;
+	wire			fdc_rden_n;
+	wire			fdd_wren;
+	wire			fdd_rden;
+
+
+	assign fdc_wren_n			=	SW[7]		?	~floppy_wren	:	1'b1;
+	assign fdd_wren				=	SW[7]		?	1'b0			:	floppy_wren;
+
+	assign fdc_rden_n			=	SW[7]		?	~floppy_rden	:	1'b1;
+	assign fdd_rden				=	SW[7]		?	1'b0			:	floppy_rden;
+
+
+	wire	[7:0]	fdc_idata;
+	wire	[7:0]	fdd_idata;
+
+	assign fdc_idata			=	SW[7]		?	DO				:	8'b0;
+	assign fdd_idata			=	SW[7]		?	8'b0			:	DO;
+
+
+	wire	[7:0]	fdc_odata;
+	wire	[7:0]	fdd_odata;
+
+	assign fdc_odata			=	!fdc_rden_n	?	fdc_data		:	8'b0;
+
+
+
+
+	assign floppy_odata			=	SW[7]		?	fdc_odata		:	fdd_odata;
+
+	assign {GPIO_1[20], GPIO_1[22], GPIO_1[24], GPIO_1[26], GPIO_1[28], GPIO_1[30], GPIO_1[32], GPIO_1[34]} =
+		fdc_address_bus_n;
+
+	assign {GPIO_1[4], GPIO_1[6], GPIO_1[8], GPIO_1[10], GPIO_1[12], GPIO_1[14], GPIO_1[16], GPIO_1[18]} = 
+		!fdc_wren_n	? fdc_idata : 8'bZZZZZZZZ;
+
+	assign {GPIO_1[2], GPIO_1[0], GPIO_1[1]} = {fdc_rden_n, fdc_wren_n, mreset_n};
+
+
+	wire	[7:0]	fdc_data;
+
+	assign fdc_data =
+		{GPIO_1[4], GPIO_1[6], GPIO_1[8], GPIO_1[10], GPIO_1[12], GPIO_1[14], GPIO_1[16], GPIO_1[18]};
+
 
 	floppy flappy(
 		.clk(clk24), 
@@ -940,11 +991,11 @@ wire		floppy_death_by_floppy;
 		.uart_txd(UART_TXD),
 		
 		// io ports
-		.hostio_addr({address_bus_r[2],~address_bus_r[1:0]}),
-		.hostio_idata(DO),
-		.hostio_odata(floppy_odata),
-		.hostio_rd(floppy_rden),
-		.hostio_wr(floppy_wren),
+		.hostio_addr(fdd_address_bus),
+		.hostio_idata(fdd_idata),
+		.hostio_odata(fdd_odata),
+		.hostio_rd(fdd_rden),
+		.hostio_wr(fdd_wren),
 		
 		// screen memory
 		.display_addr(osd_address),
