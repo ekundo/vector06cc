@@ -33,8 +33,7 @@ BOARDFILE = DE2Pins
 all: smart.log $(PROJECT).asm.rpt $(PROJECT).sta.rpt 
 
 clean:
-	rm -f src
-	rm -rf *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db incremental_db reports *.qpf *.qsf
+	rm -rf *.rpt *.chg smart.log *.htm *.eqn *.pin *.sof *.pof db incremental_db reports
 
 map: smart.log $(PROJECT).map.rpt
 fit: smart.log $(PROJECT).fit.rpt
@@ -46,7 +45,7 @@ smart: smart.log
 # Executable Configuration
 ###################################################################
 
-MAP_ARGS = --read_settings_files=on $(addprefix --source=,$(SRCS)) -l ../src -l ../src/altmodules -l ../src/DE1 -l ../src/T80
+MAP_ARGS = --read_settings_files=on $(addprefix --source=,$(SRCS)) -l ./src -l ./src/altmodules -l ./src/DE1 -l ./src/T80
 
 FIT_ARGS = --part=$(PART) --read_settings_files=on
 ASM_ARGS =
@@ -58,8 +57,7 @@ STA_ARGS =
 
 STAMP = echo done >
 
-$(PROJECT).map.rpt: map.chg ../src
-	ln -fs ../src .
+$(PROJECT).map.rpt: map.chg ./src
 	quartus_map $(PROJECT).qpf
 	$(STAMP) fit.chg
 
@@ -84,8 +82,8 @@ smart.log: $(ASSIGNMENT_FILES)
 $(ASSIGNMENT_FILES):
 	#quartus_sh --prepare -f $(FAMILY) -t $(TOP_LEVEL_ENTITY) $(PROJECT)
 	#-cat $(BOARDFILE) >> $(PROJECT).qsf
-	cp ../$(PROJECT).qsf .
-	cp ../$(PROJECT).qpf .
+	# cp ../$(PROJECT).qsf .
+	# cp ../$(PROJECT).qpf .
 map.chg:
 	$(STAMP) map.chg
 fit.chg:
