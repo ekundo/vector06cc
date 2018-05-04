@@ -97,5 +97,5 @@ asm.chg:
 # Programming the device
 ###################################################################
 
-program: reports/$(PROJECT).sof
+prog: reports/$(PROJECT).sof
 	quartus_pgm --no_banner --mode=jtag -o "P;reports/$(PROJECT).sof"
