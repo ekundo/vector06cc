@@ -11,3 +11,5 @@ simulation/
 serv_req_info.txt
 vector06cc.qws
 **/*.stp
+*.chg
+smart.log
