@@ -9,17 +9,12 @@ PROJECT = vector06cc
 TOP_LEVEL_ENTITY = vector06cc
 ASSIGNMENT_FILES = $(PROJECT).qpf $(PROJECT).qsf
 QUARTUS_DIR = $(HOME)/altera/13.0sp1
-export PATH := $(PATH):$(QUARTUS_DIR)/quartus/bin/
-export TCLLIBPATH := \
-    . \
-    $(QUARTUS_DIR)/quartus/common/tcl/packages/tcllib-1.11/cmdline/ \
-    $(QUARTUS_DIR)/quartus/linux/tcl8.5/msgcat/
 
 ###################################################################
 # Part, Family, Boardfile DE1 or DE2
 FAMILY = "Cyclone II"
 PART = EP2C20F484C7
-BOARDFILE = DE2Pins
+BOARDFILE = DE1
 ###################################################################
 
 ###################################################################
@@ -27,7 +22,7 @@ BOARDFILE = DE2Pins
 #
 # all: build everything
 # clean: remove output files and database
-# program: program your device with the compiled design
+# prog: program your device with the compiled design
 ###################################################################
 
 all: smart.log $(PROJECT).asm.rpt $(PROJECT).sta.rpt 
@@ -46,7 +41,6 @@ smart: smart.log
 ###################################################################
 
 MAP_ARGS = --read_settings_files=on $(addprefix --source=,$(SRCS)) -l ./src -l ./src/altmodules -l ./src/DE1 -l ./src/T80
-
 FIT_ARGS = --part=$(PART) --read_settings_files=on
 ASM_ARGS =
 STA_ARGS =
@@ -80,10 +74,6 @@ smart.log: $(ASSIGNMENT_FILES)
 ###################################################################
 
 $(ASSIGNMENT_FILES):
-	#quartus_sh --prepare -f $(FAMILY) -t $(TOP_LEVEL_ENTITY) $(PROJECT)
-	#-cat $(BOARDFILE) >> $(PROJECT).qsf
-	# cp ../$(PROJECT).qsf .
-	# cp ../$(PROJECT).qpf .
 map.chg:
 	$(STAMP) map.chg
 fit.chg:
@@ -99,3 +89,6 @@ asm.chg:
 
 prog: reports/$(PROJECT).sof
 	quartus_pgm --no_banner --mode=jtag -o "P;reports/$(PROJECT).sof"
+
+flash: reports/$(PROJECT).pof
+	quartus_pgm --no_banner --mode=as -o "P;reports/$(PROJECT).pof"
